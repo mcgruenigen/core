@@ -5,6 +5,7 @@
 <?php foreach($this->shippingMethods as $method): ?>
 	<li><?php echo $method; ?></li>
 <?php endforeach; ?>
-</ul></ul><?php if (strlen($this->error)): ?>
+</ul>
+<?php if (strlen($this->error)): ?>
 <p class="error"><?php echo $this->error; ?></p><?php endif; ?>
 </div>
