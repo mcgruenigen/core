@@ -2,6 +2,11 @@
 Isotope eCommerce Changelog
 ===========================
 
+Version 0.2.11 (2011-07-??)
+------------------------------
+- Fixed "text only" checkbox not hiding html input in mail templates
+- Fixed attribute editor allowing to change database field name in edit all mode
+
 Version 0.2.10 (2011-07-06)
 ------------------------------
 - Added support for Contao 2.10 "structure" event (see http://dev.contao.org/issues/2504)
