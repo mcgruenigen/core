@@ -932,6 +932,18 @@ class ModuleIsotopeCheckout extends ModuleIsotope
 		
 		if ($blnCheckout)
 		{
+			$objOrder = new IsotopeOrder();
+			
+			if (!$objOrder->findBy('id', $orderId))
+			{
+				return false;
+			}
+			
+			if ($objOrder->pid > 0)
+			{
+				$objUser = $this->Database->execute("SELECT * FROM tl_member WHERE id=".(int)$objOrder->pid);
+			}
+			
 			$arrData = array_merge($this->arrOrderData, array
 			(
 				'order_id'					=> ($this->Isotope->Config->orderPrefix . $orderId),
@@ -956,6 +968,14 @@ class ModuleIsotopeCheckout extends ModuleIsotope
 				$arrData['shipping_'.$k] = $this->Isotope->formatValue('tl_iso_addresses', $k, $v);
 			}
 			
+			if ($objOrder->pid > 0)
+			{
+				foreach( $objUser->row() as $k => $v )
+				{
+					$arrData['member_'.$k] = $this->Isotope->formatValue('tl_member', $k, $v);
+				}
+			}
+			
 			$this->log('New order ID ' . $orderId . ' has been placed', 'ModuleIsotopeCheckout writeOrder()', TL_ACCESS);
 			
 			if ($this->iso_mail_customer)
@@ -973,10 +993,10 @@ class ModuleIsotopeCheckout extends ModuleIsotope
 					$strCustomerName = $this->Isotope->Cart->shippingAddress['firstname'] . ' ' . $this->Isotope->Cart->shippingAddress['lastname'];
 					$strCustomerEmail = $this->Isotope->Cart->shippingAddress['email'];
 				}
-				elseif (FE_USER_LOGGED_IN && $this->User->email != '')
+				elseif ($objOrder->pid > 0 && $objUser->email != '')
 				{
-					$strCustomerName = $this->User->firstname . ' ' . $this->User->lastname;
-					$strCustomerEmail = $this->User->email; 
+					$strCustomerName = $objUser->firstname . ' ' . $objUser->lastname;
+					$strCustomerEmail = $objUser->email; 
 				}
 				
 				if (trim($strCustomerName) != '')
@@ -1001,27 +1021,22 @@ class ModuleIsotopeCheckout extends ModuleIsotope
 				$this->Isotope->sendMail($this->iso_mail_admin, $strAdminEmail, $GLOBALS['TL_LANGUAGE'], $arrData, $strCustomerEmail);
 			}
 			
-			$objOrder = new IsotopeOrder();
-			
-			if ($objOrder->findBy('id', $orderId))
-			{
-				$objOrder->transferFromCollection($this->Isotope->Cart);
-				
-				$this->Isotope->Cart->delete();
-			}
+			// Convert cart collection to order collection and delete cart
+			$objOrder->transferFromCollection($this->Isotope->Cart);
+			$this->Isotope->Cart->delete();
 			
 			unset($_SESSION['CHECKOUT_DATA']);
 			unset($_SESSION['ISOTOPE']);
 			
 			// Store address in address book
-			if ($this->iso_addToAddressbook && FE_USER_LOGGED_IN)
+			if ($this->iso_addToAddressbook && $objOrder->pid > 0)
 			{
 				foreach( array('billing', 'shipping') as $address )
 				{
 					if ($arrData[$address.'_id'] == 0)
 					{
 						$arrAddress = array_intersect_key($this->Isotope->Cart->{$address.'Address'}, array_flip($this->Isotope->Config->{$address.'_fields'}));
-						$arrAddress['pid'] = $this->User->id;
+						$arrAddress['pid'] = $objOrder->pid;
 						$arrAddress['tstamp'] = $time;
 
 						$this->Database->prepare("INSERT INTO tl_iso_addresses %s")->set($arrAddress)->execute();

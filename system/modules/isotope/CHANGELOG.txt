@@ -4,6 +4,8 @@ Isotope eCommerce Changelog
 
 Version 0.2.11 (2011-07-??)
 ------------------------------
+- Improved: checkout is now relying on order pid for member, not the currently logged in user object
+- Improved: member data is available in checkout confirmation email template
 - Fixed "text only" checkbox not hiding html input in mail templates
 - Fixed attribute editor allowing to change database field name in edit all mode
 
