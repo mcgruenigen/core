@@ -876,11 +876,7 @@ class Isotope extends Controller
 		{
 			foreach ($value as $kk=>$vv)
 			{
-				if (is_array($vv))
-				{
-					$vals = array_values($vv);
-					$value[$kk] = $vals[0].' ('.$vals[1].')';
-				}
+				$value[$kk] = $this->formatValue($table, $field, $vv);
 			}
 
 			return implode(', ', $value);
