@@ -109,7 +109,7 @@ class ModuleIsotopeCart extends ModuleIsotope
 			{
 				$this->redirect((strlen($this->Input->get('referer')) ? base64_decode($this->Input->get('referer', true)) : $strUrl));
 			}
-			elseif ($this->Input->post('FORM_SUBMIT') == 'iso_cart_update' && is_array($arrQuantity))
+			elseif ($this->Input->post('FORM_SUBMIT') == ('iso_cart_update_'.$this->id) && is_array($arrQuantity))
 			{
 				$blnReload = true;
 				$this->Isotope->Cart->updateProduct($objProduct, array('product_quantity'=>$arrQuantity[$objProduct->cart_id]));
@@ -160,8 +160,8 @@ class ModuleIsotopeCart extends ModuleIsotope
 			}
 		}
 		
-		$objTemplate->formId = 'iso_cart_update';
-		$objTemplate->formSubmit = 'iso_cart_update';
+		$objTemplate->formId = 'iso_cart_update_'.$this->id;
+		$objTemplate->formSubmit = 'iso_cart_update_'.$this->id;
 		$objTemplate->action = $this->Environment->request;
 		$objTemplate->summary = $GLOBALS['ISO_LANG']['MSC']['cartSummary'];
 		$objTemplate->products = $arrProductData;
