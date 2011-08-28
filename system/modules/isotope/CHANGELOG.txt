@@ -2,7 +2,7 @@
 Isotope eCommerce Changelog
 ===========================
 
-Version 0.2.11 (2011-07-??)
+Version 0.2.11 (2011-08-28)
 ------------------------------
 - Improved: checkout is now relying on order pid for member, not the currently logged in user object
 - Improved: member data is available in checkout confirmation email template
