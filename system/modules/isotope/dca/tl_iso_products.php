@@ -1078,7 +1078,13 @@ $strBuffer .= '<th style="text-align:center"><img src="system/themes/default/ima
 					}	
 				}
 
-				$strPattern = '@^(' . ($objProducts->alias ?  '|' . standardize($objProducts->alias, true) : '') . ($objProducts->sku ? '|' . $objProducts->sku : '') .($objProducts->sku ? '|' . standardize($objProducts->sku, true) : '') . (count($arrImageNames) ? '|' . implode('|', $arrImageNames) : '') . ')@i';
+				$arrPattern = array();
+				$arrPattern[] = $objProducts->alias ?  standardize($objProducts->alias, true) : null;
+				$arrPattern[] = $objProducts->sku ? $objProducts->sku : null;
+				$arrPattern[] = $objProducts->sku ? standardize($objProducts->sku, true) : null;
+				$arrPattern[] = count($arrImageNames) ? implode('|', $arrImageNames) : null;
+
+				$strPattern = '@^(' . implode('|', array_filter($arrPattern)) . ')@i';
 				
 				$arrMatches = preg_grep($strPattern, $arrFiles);
 
