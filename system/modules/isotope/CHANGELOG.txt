@@ -2,8 +2,12 @@
 Isotope eCommerce Changelog
 ===========================
 
+Version 0.2.12 (2011-??-??)
+---------------------------
+- Added "transferCollection" hook
+
 Version 0.2.11 (2011-08-28)
-------------------------------
+---------------------------
 - Improved: checkout is now relying on order pid for member, not the currently logged in user object
 - Improved: member data is available in checkout confirmation email template
 - Fixed "text only" checkbox not hiding html input in mail templates
@@ -15,7 +19,7 @@ Version 0.2.11 (2011-08-28)
 - Fixed potential issue in rules when no cart ID was available (Ticket #509)
 
 Version 0.2.10 (2011-07-06)
-------------------------------
+---------------------------
 - Added support for Contao 2.10 "structure" event (see http://dev.contao.org/issues/2504)
 - Added shipping & payment method filter to orders
 - Added: includeBlankOption=true for select options using foreignKey (Ticket #292)
@@ -29,7 +33,7 @@ Version 0.2.10 (2011-07-06)
 - Fixed text email fields, make sure they never contain HTML
 
 Version 0.2.9 (2011-05-23)
-------------------------------
+--------------------------
 - Improved: Show disabled shipping and payment modules on frontend preview
 - Improved Postfinance payment module with new authentication method (Ticket #235)
 - Improved: Only add href_reader if field is available in product collection items table (Ticket #453)
@@ -40,7 +44,7 @@ Version 0.2.9 (2011-05-23)
 - Fixed empty option value ##cart_text## (Ticket #418)
 
 Version 0.2.8 (2011-05-09)
-------------------------------
+--------------------------
 - Added import/export option for mail templates
 - Added quantity_requested to product template
 - Added support for conditionalselect as conditionField

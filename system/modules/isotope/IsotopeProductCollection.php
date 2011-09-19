@@ -415,8 +415,11 @@ abstract class IsotopeProductCollection extends Model
 	
 	/**
 	 * Transfer products from another collection to this one (eg. Cart to Order)
+	 *
+	 * @param	IsotopeProductCollection
+	 * @param	bool
+	 * @return	array
 	 */
-	//!todo: implement addToCollection (and removeFromCollection) hooks!
 	public function transferFromCollection(IsotopeProductCollection $objCollection, $blnDuplicate=true)
 	{
 		if (!$this->blnRecordExists)
@@ -431,7 +434,22 @@ abstract class IsotopeProductCollection extends Model
 		
 		while( $objOldItems->next() )
 		{
+			$blnTransfer = true;
+			
 			$objNewItems = $this->Database->execute("SELECT * FROM {$this->ctable} WHERE pid={$this->id} AND product_id={$objOldItems->product_id} AND product_options='{$objOldItems->product_options}'");
+			
+			// HOOK for adding additional functionality when adding product to collection
+			if (isset($GLOBALS['ISO_HOOKS']['transferCollection']) && is_array($GLOBALS['ISO_HOOKS']['transferCollection']))
+			{
+				foreach ($GLOBALS['ISO_HOOKS']['transferCollection'] as $callback)
+				{
+					$this->import($callback[0]);
+					$blnTransfer = $this->$callback[0]->$callback[1]($objOldItems, $objNewItems, $objCollection, $this, $blnTransfer);
+				}
+			}
+			
+			if (!$blnTransfer)
+				continue;
 			
 			// Product exists in target table. Increase amount.
 			if ($objNewItems->numRows)
