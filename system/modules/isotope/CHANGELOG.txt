@@ -5,6 +5,7 @@ Isotope eCommerce Changelog
 Version 0.2.12 (2011-??-??)
 ---------------------------
 - Added "transferCollection" hook
+- Fixed availability of unpublished products
 
 Version 0.2.11 (2011-08-28)
 ---------------------------

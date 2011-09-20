@@ -85,7 +85,7 @@ abstract class ModuleIsotope extends Module
 		
 		if (is_numeric($objProductData))
 		{
-			$objProductData = $this->Database->query("SELECT *, (SELECT class FROM tl_iso_producttypes WHERE tl_iso_products.type=tl_iso_producttypes.id) AS product_class FROM tl_iso_products WHERE id=$objProductData");
+			$objProductData = $this->Database->prepare("SELECT *, (SELECT class FROM tl_iso_producttypes WHERE tl_iso_products.type=tl_iso_producttypes.id) AS product_class FROM tl_iso_products WHERE id=? AND published='1'")->execute($objProductData);
 		}
 									 
 		$strClass = $GLOBALS['ISO_PRODUCT'][$objProductData->product_class]['class'];
@@ -110,7 +110,7 @@ abstract class ModuleIsotope extends Module
 	{
 		global $objPage;
 		
-		$objProductData = $this->Database->prepare("SELECT *, (SELECT class FROM tl_iso_producttypes WHERE tl_iso_products.type=tl_iso_producttypes.id) AS product_class FROM tl_iso_products WHERE pid=0 AND " . (is_numeric($strAlias) ? 'id' : 'alias') . "=?")
+		$objProductData = $this->Database->prepare("SELECT *, (SELECT class FROM tl_iso_producttypes WHERE tl_iso_products.type=tl_iso_producttypes.id) AS product_class FROM tl_iso_products WHERE pid=0 AND published='1' AND " . (is_numeric($strAlias) ? 'id' : 'alias') . "=?")
 										 ->limit(1)
 										 ->executeUncached($strAlias);
 									 
@@ -140,7 +140,7 @@ abstract class ModuleIsotope extends Module
 			return array();
 		
 		$arrProducts = array();
-		$objProductData = $this->Database->query("SELECT *, (SELECT class FROM tl_iso_producttypes WHERE tl_iso_products.type=tl_iso_producttypes.id) AS product_class FROM tl_iso_products WHERE id IN (" . implode(',', $arrIds) . ") ORDER BY id=" . implode(' DESC, id=', $arrIds) . " DESC");
+		$objProductData = $this->Database->query("SELECT *, (SELECT class FROM tl_iso_producttypes WHERE tl_iso_products.type=tl_iso_producttypes.id) AS product_class FROM tl_iso_products WHERE id IN (" . implode(',', $arrIds) . ") AND published='1' ORDER BY id=" . implode(' DESC, id=', $arrIds) . " DESC");
 		
 		while( $objProductData->next() )
 		{
