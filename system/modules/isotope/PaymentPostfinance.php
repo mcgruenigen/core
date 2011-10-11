@@ -57,9 +57,17 @@ class PaymentPostfinance extends IsotopePayment
 		}
 
 		$this->postfinance_method = 'GET';
+
 		if (!$this->validateSHASign())
 		{
 			$this->log('Received invalid postsale data for order ID "' . $objOrder->id . '"', __METHOD__, TL_ERROR);
+			$this->redirect($this->addToUrl('step=failed', true));
+		}
+
+		// Validate payment data (see #2221)
+		if ($objOrder->currency != $this->getRequestData('currency') || $objOrder->grandTotal != $this->getRequestData('amount'))
+		{
+			$this->log('Postsale checkout manipulation in payment for Order ID ' . $objOrder->id . '!', __METHOD__, TL_ERROR);
 			$this->redirect($this->addToUrl('step=failed', true));
 		}
 		
@@ -95,6 +103,13 @@ class PaymentPostfinance extends IsotopePayment
 		if (!$this->validateSHASign())
 		{
 			$this->log('Received invalid postsale data for order ID "' . $objOrder->id . '"', __METHOD__, TL_ERROR);
+			return;
+		}
+		
+		// Validate payment data (see #2221)
+		if ($objOrder->currency != $this->getRequestData('currency') || $objOrder->grandTotal != $this->getRequestData('amount'))
+		{
+			$this->log('Postsale checkout manipulation in payment for Order ID ' . $objOrder->id . '!', __METHOD__, TL_ERROR);
 			return;
 		}
 

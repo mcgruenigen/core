@@ -56,7 +56,7 @@ class PaymentPaypal extends IsotopePayment
 	{
 		$objOrder = $this->Database->prepare("SELECT * FROM tl_iso_orders WHERE cart_id=?")->limit(1)->execute($this->Isotope->Cart->id);
 		
-		if ($objOrder->date_payed <= time())
+		if ($objOrder->date_payed > 0 && $objOrder->date_payed <= time())
 		{
 			unset($_SESSION['PAYPAL_TIMEOUT']);
 			return true;
@@ -108,7 +108,7 @@ class PaymentPaypal extends IsotopePayment
 		if ($objRequest->hasError())
 		{
 			$this->log('Request Error: ' . $objRequest->error, 'PaymentPaypal processPostSale()', TL_ERROR);
-			exit;
+			return;
 		}
 		elseif ($objRequest->response == 'VERIFIED' && ($this->Input->post('receiver_email') == $this->paypal_account || $this->debug))
 		{
@@ -117,6 +117,13 @@ class PaymentPaypal extends IsotopePayment
 			if (!$objOrder->numRows)
 			{
 				$this->log('Order ID "' . $this->Input->post('invoice') . '" not found', 'PaymentPaypal processPostSale()', TL_ERROR);
+				return;
+			}
+			
+			// Validate payment data (see #2221)
+			if ($objOrder->currency != $this->Input->post('mc_currency') || $objOrder->grandTotal != $this->Input->post('mc_gross'))
+			{
+				$this->log('IPN checkout manipulation in payment from "' . $this->Input->post('payer_email') . '" !', __METHOD__, TL_ERROR);
 				return;
 			}
 
